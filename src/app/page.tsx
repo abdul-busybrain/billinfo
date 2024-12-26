@@ -1,11 +1,14 @@
-import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="max-w-5xl mx-auto">
+    <main className="flex flex-col justify-center h-full text-center gap-6 max-w-5xl mx-auto">
       <h1 className="text-5xl font-bold">Billinfo</h1>
       <p>
-        <a href="/dashboard">Sign in</a>
+        <Button asChild>
+          <Link href="/dashboard">Sign in</Link>
+        </Button>
       </p>
     </main>
   );
