@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 export default async function Home() {
   const results = await db.select().from(Invoices);
@@ -70,11 +71,19 @@ export default async function Home() {
                   </Link>
                 </TableCell>
                 <TableCell className="text-center p-0">
-                  <Badge className="rounded-full">
-                    <Link className="" href={`/invoices/${result.id}`}>
+                  <Link className="" href={`/invoices/${result.id}`}>
+                    <Badge
+                      className={cn(
+                        "rounded-full capitalize",
+                        result.status === "open" && "bg-blue-500",
+                        result.status === "paid" && "bg-green-600",
+                        result.status === "void" && "bg-zinc-700",
+                        result.status === "uncollectible" && "bg-red-600"
+                      )}
+                    >
                       {result.status}
-                    </Link>
-                  </Badge>
+                    </Badge>
+                  </Link>
                 </TableCell>
                 <TableCell className="text-right p-0">
                   <Link
