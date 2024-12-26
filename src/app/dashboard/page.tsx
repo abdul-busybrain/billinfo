@@ -1,3 +1,6 @@
+import { db } from "@/db";
+import { Invoices } from "@/db/schema";
+
 import { CirclePlus } from "lucide-react";
 import {
   Table,
@@ -12,7 +15,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-export default function Home() {
+export default async function Home() {
+  const results = await db.select().from(Invoices);
+
+  console.log("results", results);
   return (
     <main className="flex flex-col justify-center h-full text-center gap-6 max-w-5xl mx-auto my-12">
       <div className="flex justify-between">
@@ -38,23 +44,49 @@ export default function Home() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          <TableRow>
-            <TableCell className="font-medium text-lef p-4">
-              <span className="font-semibold">25/12/2024</span>
-            </TableCell>
-            <TableCell className="text-left p-4">
-              <span className="font-semibold">Abdullahi Auwal Haruna</span>
-            </TableCell>
-            <TableCell className="text-left p-4">
-              <span> a2h@abilabs.com</span>
-            </TableCell>
-            <TableCell className="text-center p-4">
-              <Badge className="rounded-full">Open</Badge>
-            </TableCell>
-            <TableCell className="text-right p-4">
-              <span className="font-semibold"> ₦250,000</span>
-            </TableCell>
-          </TableRow>
+          {results.map((result) => {
+            return (
+              <TableRow key={result.id}>
+                <TableCell className="font-medium text-lef p-0">
+                  <Link
+                    href={`/invoices/${result.id}`}
+                    className="block font-semibold p-4"
+                  >
+                    {new Date(result.createTs).toLocaleDateString()}
+                  </Link>
+                </TableCell>
+                <TableCell className="text-left p-0">
+                  <Link
+                    href={`/invoices/${result.id}`}
+                    className="block font-semibold p-4"
+                  >
+                    Abdullahi Auwal Haruna
+                  </Link>
+                </TableCell>
+                <TableCell className="text-left p-0">
+                  <Link className="p-4" href={`/invoices/${result.id}`}>
+                    {" "}
+                    a2h@abilabs.com
+                  </Link>
+                </TableCell>
+                <TableCell className="text-center p-0">
+                  <Badge className="rounded-full">
+                    <Link className="" href={`/invoices/${result.id}`}>
+                      {result.status}
+                    </Link>
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right p-0">
+                  <Link
+                    href={`/invoices/${result.id}`}
+                    className="font-semibold p-4 block"
+                  >
+                    ₦{(result.value / 100).toFixed(2)}
+                  </Link>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
       </Table>
     </main>
