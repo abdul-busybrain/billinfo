@@ -9,7 +9,7 @@ export default function Header() {
         <p className="text-sm">Billinfo &copy; {new Date().getFullYear()}</p>
         <p className="text-sm">
           Created by Abdullahi.Busybrain with Next.js, Tailwind CSS, Xata,
-          Clerk.dev and Stripe
+          Clerk.dev, Stripe, React and Vercel
         </p>
       </Container>
     </header>
