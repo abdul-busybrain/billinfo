@@ -1,7 +1,9 @@
+import { CirclePlus } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
+
 import { db } from "@/db";
 import { Invoices } from "@/db/schema";
 
-import { CirclePlus } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -16,11 +18,20 @@ import { Button } from "@/components/ui/button";
 import Container from "@/components/Container";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { eq } from "drizzle-orm";
 
 export default async function Home() {
-  const results = await db.select().from(Invoices);
+  const authObj = await auth();
+  const { userId } = authObj;
+  if (!userId) {
+    return;
+  }
 
-  console.log("results", results);
+  const results = await db
+    .select()
+    .from(Invoices)
+    .where(eq(Invoices.userId, userId));
+
   return (
     <main className=" h-full">
       <Container>
