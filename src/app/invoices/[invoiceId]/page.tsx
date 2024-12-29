@@ -8,6 +8,18 @@ import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+
+import { AVAILABLE_STATUSES } from "@/data/invoices";
+import { updateStatusAction } from "@/app/actions";
+import { ChevronDown } from "lucide-react";
+
 export default async function InvoicePage({
   params,
 }: {
@@ -16,7 +28,7 @@ export default async function InvoicePage({
   const authObj = await auth();
   const { userId } = authObj;
   if (!userId) {
-    return;
+    return notFound();
   }
 
   const invoiceId = parseInt(params.invoiceId);
@@ -34,7 +46,7 @@ export default async function InvoicePage({
   }
 
   return (
-    <main className="h-full  ">
+    <main className="h-full  w-full">
       <Container>
         <div className="flex justify-between mb-8">
           <h1 className="flex items-center gap-4 text-3xl font-bold">
@@ -51,7 +63,32 @@ export default async function InvoicePage({
               {result.status}
             </Badge>
           </h1>
-          <p></p>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="flex items-center gap-2" variant={"outline"}>
+                Change status
+                <ChevronDown className="w-full h-auto" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              {AVAILABLE_STATUSES.map((status) => {
+                return (
+                  <DropdownMenuItem key={status.id}>
+                    <form action={updateStatusAction}>
+                      <input
+                        type="hidden"
+                        name="id"
+                        value={invoiceId.toString()}
+                      />
+                      <input type="hidden" name="status" value={status.id} />
+                      <Button>{status.label}</Button>
+                    </form>
+                  </DropdownMenuItem>
+                );
+              })}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         <p className="text-3xl mb-3">₦{(result.value / 100).toFixed(2)}</p>
