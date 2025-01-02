@@ -1,7 +1,7 @@
 "use client";
 
 import { useOptimistic } from "react";
-import { Invoices } from "@/db/schema";
+import { Customers, Invoices } from "@/db/schema";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import Container from "@/components/Container";
@@ -30,7 +30,9 @@ import { updateStatusAction, deleteInvoiceAction } from "@/app/actions";
 import { ChevronDown, Ellipsis, Trash2 } from "lucide-react";
 
 interface InvoiceProps {
-  invoice: typeof Invoices.$inferSelect;
+  invoice: typeof Invoices.$inferSelect & {
+    customer: typeof Customers.$inferSelect;
+  };
 }
 
 export default function Invoice({ invoice }: InvoiceProps) {
@@ -44,7 +46,6 @@ export default function Invoice({ invoice }: InvoiceProps) {
   async function handleOnUpdateStatus(formData: FormData) {
     const originalStatus = currentStatus;
     setCurrentStatus(formData.get("status"));
-
     try {
       await updateStatusAction(formData);
     } catch (e) {
@@ -61,13 +62,13 @@ export default function Invoice({ invoice }: InvoiceProps) {
             <Badge
               className={cn(
                 "rounded-full capitalize",
-                invoice.status === "open" && "bg-blue-500",
-                invoice.status === "paid" && "bg-green-600",
-                invoice.status === "void" && "bg-zinc-700",
-                invoice.status === "uncollectible" && "bg-red-600"
+                currentStatus === "open" && "bg-blue-500",
+                currentStatus === "paid" && "bg-green-600",
+                currentStatus === "void" && "bg-zinc-700",
+                currentStatus === "uncollectible" && "bg-red-600"
               )}
             >
-              {invoice.status}
+              {currentStatus}
             </Badge>
           </h1>
 
@@ -84,11 +85,7 @@ export default function Invoice({ invoice }: InvoiceProps) {
                   return (
                     <DropdownMenuItem key={status.id}>
                       <form action={handleOnUpdateStatus}>
-                        <input
-                          type="hidden"
-                          name="id"
-                          value={invoice.id.toString()}
-                        />
+                        <input type="hidden" name="id" value={invoice.id} />
                         <input type="hidden" name="status" value={status.id} />
                         <button>{status.label}</button>
                       </form>
@@ -136,11 +133,7 @@ export default function Invoice({ invoice }: InvoiceProps) {
                       className="flex justify-center"
                       action={deleteInvoiceAction}
                     >
-                      <input
-                        type="hidden"
-                        name="id"
-                        value={invoice.id.toString()}
-                      />
+                      <input type="hidden" name="id" value={invoice.id} />
                       <Button
                         variant={"destructive"}
                         className="flex items-center gap-2"
@@ -183,14 +176,14 @@ export default function Invoice({ invoice }: InvoiceProps) {
             <strong className="block w-28 flex-shrink-0 font-medium text-sm">
               Billing name
             </strong>
-            <span></span>
+            <span>{invoice.customer.name}</span>
           </li>
 
           <li className="flex gap-4">
             <strong className="block w-28 flex-shrink-0 font-medium text-sm">
               Billing email
             </strong>
-            <span></span>
+            <span>{invoice.customer.email}</span>
           </li>
         </ul>
       </Container>
