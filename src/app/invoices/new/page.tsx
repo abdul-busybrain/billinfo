@@ -38,7 +38,7 @@ export default function Home() {
             <Label htmlFor="name" className="block font-semibold mb-2 text-sm">
               Billining name
             </Label>
-            <Input id="name" name="name " type="text" />
+            <Input id="name" name="name" type="text" />
           </div>
           <div>
             <Label htmlFor="email" className="block font-semibold mb-2 text-sm">
