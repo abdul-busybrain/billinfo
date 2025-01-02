@@ -2,11 +2,14 @@
 
 import { redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
+import Stripe from "stripe";
 
 import { Customers, Invoices, Status } from "@/db/schema";
 import { db } from "@/db";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+
+const stripe = new Stripe(String(process.env.STRIPE_API_SECRET));
 
 export async function createAction(formData: FormData) {
   const authObj = await auth();
