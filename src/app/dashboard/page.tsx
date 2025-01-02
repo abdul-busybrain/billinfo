@@ -18,20 +18,28 @@ import { Button } from "@/components/ui/button";
 import Container from "@/components/Container";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { eq } from "drizzle-orm";
+import { eq, and, isNull } from "drizzle-orm";
 
 export default async function Home() {
   const authObj = await auth();
-  const { userId } = authObj;
-  if (!userId) {
-    return;
-  }
+  const { userId, orgId } = authObj;
+  if (!userId) return;
 
-  const results = await db
-    .select()
-    .from(Invoices)
-    .innerJoin(Customers, eq(Invoices.customerId, Customers.id))
-    .where(eq(Invoices.userId, userId));
+  let results;
+
+  if (orgId) {
+    results = await db
+      .select()
+      .from(Invoices)
+      .innerJoin(Customers, eq(Invoices.customerId, Customers.id))
+      .where(eq(Invoices.organizationId, orgId));
+  } else {
+    results = await db
+      .select()
+      .from(Invoices)
+      .innerJoin(Customers, eq(Invoices.customerId, Customers.id))
+      .where(and(eq(Invoices.userId, userId), isNull(Invoices.organizationId)));
+  }
 
   const invoices = results?.map(({ invoices, customers }) => {
     return {
