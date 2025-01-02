@@ -10,7 +10,7 @@ import { revalidatePath } from "next/cache";
 
 export async function createAction(formData: FormData) {
   const authObj = await auth();
-  const { userId } = authObj;
+  const { userId, orgId } = authObj;
   if (!userId) {
     return;
   }
@@ -23,7 +23,12 @@ export async function createAction(formData: FormData) {
 
   const [customer] = await db
     .insert(Customers)
-    .values({ name, email, userId })
+    .values({
+      name,
+      email,
+      userId,
+      organizationId: orgId || null,
+    })
     .returning({ id: Customers.id });
 
   const results = await db
@@ -34,6 +39,7 @@ export async function createAction(formData: FormData) {
       userId,
       customerId: customer.id,
       status: "open",
+      organizationId: orgId || null,
     })
     .returning({ id: Invoices.id });
 
