@@ -129,7 +129,7 @@ export async function createPayment(formData: FormData) {
     line_items: [
       {
         price_data: {
-          currency: "usd",
+          currency: "ngn",
           product: "prod_RWHpHcym28APEY",
           unit_amount: result.value,
         },
@@ -137,8 +137,8 @@ export async function createPayment(formData: FormData) {
       },
     ],
     mode: "payment",
-    success_url: `${origin}/invoices/${id}/payment?success=true`,
-    cancel_url: `${origin}/invoices/${id}/payment?canceled=true`,
+    success_url: `${origin}/invoices/${id}/payment?status=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/invoices/${id}/payment?status=canceled&session_id={CHECKOUT_SESSION_ID}`,
   });
 
   if (!session.url) {

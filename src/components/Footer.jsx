@@ -8,8 +8,8 @@ export default function Header() {
       <Container className="flex justify-between gap-4">
         <p className="text-sm">Billinfo &copy; {new Date().getFullYear()}</p>
         <p className="text-sm">
-          Created by Abdullahi.Busybrain with Next.js, Tailwind CSS, Xata,
-          Clerk.dev, Stripe, React and Vercel
+          Created by Abdullahi.Busybrain with Next.js, Xata, Clerk.dev, Stripe,
+          Resend, and Vercel
         </p>
       </Container>
     </header>
