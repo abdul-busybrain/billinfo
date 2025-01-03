@@ -4,6 +4,7 @@ const isPublic = createRouteMatcher([
   "/", // Home page
   "/sign-in(.*)", // Sign in page
   "/sign-up(.*)", // Sign up page
+  "/invoices(.*)/payment", // Payment page
 ]);
 
 // const isProtected = createRouteMatcher([
