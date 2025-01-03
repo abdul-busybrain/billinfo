@@ -8,6 +8,7 @@ import { db } from "@/db";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Check, CreditCard } from "lucide-react";
+import { createPayment } from "@/app/actions";
 
 export default async function InvoicePage({
   params,
@@ -74,7 +75,8 @@ export default async function InvoicePage({
           <div>
             <h2 className="text-xl font-bold mb-4">Manage invoice</h2>
             {invoice.status === "open" && (
-              <form action="">
+              <form action={createPayment}>
+                <input type="hidden" name="id" value={invoice.id} />
                 <Button className="flex gap-2 font-bold bg-green-700">
                   <CreditCard className="w-5 h-auto" />
                   Pay invoice

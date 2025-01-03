@@ -8,6 +8,7 @@ import { Customers, Invoices, Status } from "@/db/schema";
 import { db } from "@/db";
 import { and, eq, isNull } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 
 const stripe = new Stripe(String(process.env.STRIPE_API_SECRET));
 
@@ -111,4 +112,38 @@ export async function deleteInvoiceAction(formData: FormData) {
   }
 
   redirect("/dashboard");
+}
+
+export async function createPayment(formData: FormData) {
+  const headersList = headers();
+  const origin = (await headersList).get("origin");
+  const id = parseInt(formData.get("id") as string);
+
+  const [result] = await db
+    .select({ status: Invoices.status, value: Invoices.value })
+    .from(Invoices)
+    .where(eq(Invoices.id, id))
+    .limit(1);
+
+  const session = await stripe.checkout.sessions.create({
+    line_items: [
+      {
+        price_data: {
+          currency: "usd",
+          product: "prod_RWHpHcym28APEY",
+          unit_amount: result.value,
+        },
+        quantity: 1,
+      },
+    ],
+    mode: "payment",
+    success_url: `${origin}/invoices/${id}/payment?success=true`,
+    cancel_url: `${origin}/invoices/${id}/payment?canceled=true`,
+  });
+
+  if (!session.url) {
+    throw new Error("Invalid session URL");
+  }
+
+  redirect(session.url);
 }
